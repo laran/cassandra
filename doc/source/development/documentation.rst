@@ -70,7 +70,7 @@ Jira based work flow
 
 *Recommended for major changes*
 
-Significant changes to the documentation are best managed through our Jira issue tracker. Please follow the same `contribution guides <https://cassandra.apache.org/doc/latest/development/patches.html>`_ as for regular code contributions. Creating high quality content takes a lot of effort. It’s therefor always a good idea to create a ticket before you start and explain what you’re planing to do. This will create the opportunity for other contributors and committers to comment on your ideas and work so far. Eventually your patch gets a formal review before it is committed.
+Significant changes to the documentation are best managed through our Jira issue tracker. Please follow the same `contribution guides <https://cassandra.apache.org/doc/latest/development/patches.html>`_ as for regular code contributions. Creating high quality content takes a lot of effort. It’s therefore always a good idea to create a ticket before you start and explain what you’re planing to do. This will create the opportunity for other contributors and committers to comment on your ideas and work so far. Eventually your patch gets a formal review before it is committed.
 
 Working on documents locally using Sphinx
 =========================================

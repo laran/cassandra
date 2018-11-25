@@ -61,7 +61,7 @@ The native types supported by CQL are:
               : | VARCHAR
               : | VARINT
 
-The following table gives additional informations on the native data types, and on which kind of :ref:`constants
+The following table gives additional information on the native data types, and which kind of :ref:`constants
 <constants>` each type supports:
 
 =============== ===================== ==================================================================================
@@ -188,9 +188,9 @@ Working with durations
 
 Values of the ``duration`` type are encoded as 3 signed integer of variable lengths. The first integer represents the
 number of months, the second the number of days and the third the number of nanoseconds. This is due to the fact that
-the number of days in a month can change, and a day can have 23 or 25 hours depending on the daylight saving.
-Internally, the number of months and days are decoded as 32 bits integers whereas the number of nanoseconds is decoded
-as a 64 bits integer.
+the number of days in a month can change, and a day can have 23 or 25 hours depending on daylight savings.
+Internally, the number of months and days are decoded as 32-bit integers whereas the number of nanoseconds is decoded
+as a 64-bit integer.
 
 A duration can be input as:
 
@@ -221,23 +221,23 @@ Duration columns cannot be used in a table's ``PRIMARY KEY``. This limitation is
 durations cannot be ordered. It is effectively not possible to know if ``1mo`` is greater than ``29d`` without a date
 context.
 
-A ``1d`` duration is not equals to a ``24h`` one as the duration type has been created to be able to support daylight
-saving.
+A ``1d`` duration is not equal to a ``24h`` one as the duration type has been created to be able to support daylight
+savings.
 
 .. _collections:
 
 Collections
 ^^^^^^^^^^^
 
-CQL supports 3 kind of collections: :ref:`maps`, :ref:`sets` and :ref:`lists`. The types of those collections is defined
-by:
+CQL supports 3 kind of collections: :ref:`maps`, :ref:`sets` and :ref:`lists`. The types of those collections are
+defined by:
 
 .. productionlist::
    collection_type: MAP '<' `cql_type` ',' `cql_type` '>'
                   : | SET '<' `cql_type` '>'
                   : | LIST '<' `cql_type` '>'
 
-and their values can be inputd using collection literals:
+and their values can be input using collection literals:
 
 .. productionlist::
    collection_literal: `map_literal` | `set_literal` | `list_literal`
@@ -257,13 +257,13 @@ messages sent by a user”, “events registered by a sensor”...), then collec
 characteristics and limitations:
 
 - Individual collections are not indexed internally. Which means that even to access a single element of a collection,
-  the while collection has to be read (and reading one is not paged internally).
+  the whole collection has to be read (and reading one is not paged internally).
 - While insertion operations on sets and maps never incur a read-before-write internally, some operations on lists do.
-  Further, some lists operations are not idempotent by nature (see the section on :ref:`lists <lists>` below for
+  Further, some list operations are not idempotent by nature (see the section on :ref:`lists <lists>` below for
   details), making their retry in case of timeout problematic. It is thus advised to prefer sets over lists when
   possible.
 
-Please note that while some of those limitations may or may not be removed/improved upon in the future, it is a
+Please note that while some of those limitations may or may not be removed/improved upon in the future, it is an
 anti-pattern to use a (single) collection to store large amounts of data.
 
 .. _maps:
@@ -293,19 +293,19 @@ Further, maps support:
     UPDATE users SET favs['author'] = 'Ed Poe' WHERE id = 'jsmith';
     UPDATE users SET favs = favs + { 'movie' : 'Cassablanca', 'band' : 'ZZ Top' } WHERE id = 'jsmith';
 
-- Removing one or more element (if an element doesn't exist, removing it is a no-op but no error is thrown)::
+- Removing one or more elements (if an element doesn't exist, removing it is a no-op but no error is thrown)::
 
     DELETE favs['author'] FROM users WHERE id = 'jsmith';
     UPDATE users SET favs = favs - { 'movie', 'band'} WHERE id = 'jsmith';
 
   Note that for removing multiple elements in a ``map``, you remove from it a ``set`` of keys.
 
-Lastly, TTLs are allowed for both ``INSERT`` and ``UPDATE``, but in both case the TTL set only apply to the newly
+Lastly, TTLs are allowed for both ``INSERT`` and ``UPDATE``, but in both cases the TTL set only applies to the newly
 inserted/updated elements. In other words::
 
     UPDATE users USING TTL 10 SET favs['color'] = 'green' WHERE id = 'jsmith';
 
-will only apply the TTL to the ``{ 'color' : 'green' }`` record, the rest of the map remaining unaffected.
+will only apply the TTL to the ``{ 'color' : 'green' }`` record. The rest of the map will remain unaffected.
 
 
 .. _sets:
@@ -348,7 +348,7 @@ Lists
    performance considerations that you should take into account before using them. In general, if you can use a
    :ref:`set <sets>` instead of list, always prefer a set.
 
-A ``list`` is a (sorted) collection of non-unique values where elements are ordered by there position in the list. You
+A ``list`` is a (sorted) collection of non-unique values where elements are ordered by their position in the list. You
 can define and insert a list with::
 
     CREATE TABLE plays (
@@ -371,12 +371,12 @@ Further, lists support:
     UPDATE plays SET players = 5, scores = scores + [ 14, 21 ] WHERE id = '123-afde';
     UPDATE plays SET players = 6, scores = [ 3 ] + scores WHERE id = '123-afde';
 
-- Setting the value at a particular position in the list. This imply that the list has a pre-existing element for that
+- Setting the value at a particular position in the list. This implies that the list has a pre-existing element for that
   position or an error will be thrown that the list is too small::
 
     UPDATE plays SET scores[1] = 7 WHERE id = '123-afde';
 
-- Removing an element by its position in the list. This imply that the list has a pre-existing element for that position
+- Removing an element by its position in the list. This implies that the list has a pre-existing element for that position
   or an error will be thrown that the list is too small. Further, as the operation removes an element from the list, the
   list size will be diminished by 1, shifting the position of all the elements following the one deleted::
 
@@ -387,13 +387,13 @@ Further, lists support:
 
     UPDATE plays SET scores = scores - [ 12, 21 ] WHERE id = '123-afde';
 
-.. warning:: The append and prepend operations are not idempotent by nature. So in particular, if one of these operation
-   timeout, then retrying the operation is not safe and it may (or may not) lead to appending/prepending the value
+.. warning:: The append and prepend operations are not idempotent by nature. So in particular, if one of these operations
+   times out, then retrying the operation is not safe and it may (or may not) lead to appending/prepending the value
    twice.
 
-.. warning:: Setting and removing an element by position and removing occurences of particular values incur an internal
-   *read-before-write*. They will thus run more slowly and take more ressources than usual updates (with the exclusion
-   of conditional write that have their own cost).
+.. warning:: Setting and removing an element by position and removing occurrences of particular values incur an internal
+   *read-before-write*. They will thus run more slowly and take more resources than usual updates (with the exclusion
+   of conditional writes that have their own cost).
 
 Lastly, as for :ref:`maps <maps>`, TTLs when used only apply to the newly inserted values.
 
@@ -402,7 +402,7 @@ Lastly, as for :ref:`maps <maps>`, TTLs when used only apply to the newly insert
 User-Defined Types
 ^^^^^^^^^^^^^^^^^^
 
-CQL support the definition of user-defined types (UDT for short). Such a type can be created, modified and removed using
+CQL supports the definition of user-defined types (UDT for short). Such a type can be created, modified and removed using
 the :token:`create_type_statement`, :token:`alter_type_statement` and :token:`drop_type_statement` described below. But
 once created, a UDT is simply referred to by its name:
 
@@ -422,7 +422,7 @@ Creating a new user-defined type is done using a ``CREATE TYPE`` statement defin
    field_definition: `identifier` `cql_type`
 
 A UDT has a name (used to declared columns of that type) and is a set of named and typed fields. Fields name can be any
-type, including collections or other UDT. For instance::
+type, including collections or other UDTs. For instance::
 
     CREATE TYPE phone (
         country_code int,
@@ -448,19 +448,19 @@ Note that:
 - A type is intrinsically bound to the keyspace in which it is created, and can only be used in that keyspace. At
   creation, if the type name is prefixed by a keyspace name, it is created in that keyspace. Otherwise, it is created in
   the current keyspace.
-- As of Cassandra |version|, UDT have to be frozen in most cases, hence the ``frozen<address>`` in the table definition
+- As of Cassandra |version|, UDTs have to be frozen in most cases, hence the ``frozen<address>`` in the table definition
   above. Please see the section on :ref:`frozen <frozen>` for more details.
 
 UDT literals
 ~~~~~~~~~~~~
 
-Once a used-defined type has been created, value can be input using a UDT literal:
+Once a uses-defined type has been created, a value can be input using a UDT literal:
 
 .. productionlist::
    udt_literal: '{' `identifier` ':' `term` ( ',' `identifier` ':' `term` )* '}'
 
 In other words, a UDT literal is like a :ref:`map <maps>` literal but its keys are the names of the fields of the type.
-For instance, one could insert into the table define in the previous section using::
+For instance, one could insert into the table defined in the previous section using::
 
     INSERT INTO user (name, addresses)
               VALUES ('z3 Pr3z1den7', {
@@ -479,7 +479,7 @@ For instance, one could insert into the table define in the previous section usi
                   }
               })
 
-To be valid, a UDT literal should only include fields defined by the type it is a literal of, but it can omit some field
+To be valid, a UDT literal should only include fields defined by the type it is a literal of, but it can omit some fields
 (in which case those will be ``null``).
 
 Altering a UDT
@@ -517,14 +517,14 @@ is a no-op.
 Tuples
 ^^^^^^
 
-CQL also support tuples and tuple types (where the elements can be of different types). Functionally, tuples can be
-though as anonymous UDT with anonymous fields. Tuple types and tuple literals are defined by:
+CQL also supports tuples and tuple types (where the elements can be of different types). Functionally, tuples can be
+thought of as anonymous UDTs with anonymous fields. Tuple types and tuple literals are defined by:
 
 .. productionlist::
    tuple_type: TUPLE '<' `cql_type` ( ',' `cql_type` )* '>'
    tuple_literal: '(' `term` ( ',' `term` )* ')'
 
-and can be used thusly::
+and can be used like this::
 
     CREATE TABLE durations (
         event text,
@@ -533,17 +533,17 @@ and can be used thusly::
 
     INSERT INTO durations (event, duration) VALUES ('ev1', (3, 'hours'));
 
-Unlike other "composed" types (collections and UDT), a tuple is always :ref:`frozen <frozen>` (without the need of the
+Unlike other "composed" types (collections and UDT), a tuple is always :ref:`frozen <frozen>` (without the need for the
 `frozen` keyword) and it is not possible to update only some elements of a tuple (without updating the whole tuple).
-Also, a tuple literal should always have the same number of value than declared in the type it is a tuple of (some of
-those values can be null but they need to be explicitly declared as so).
+Also, a tuple literal should always have the same number of values as declared in the type it is a tuple of (some of
+those values can be null but they need to be explicitly declared as such).
 
 .. _custom-types:
 
 Custom Types
 ^^^^^^^^^^^^
 
-.. note:: Custom types exists mostly for backward compatiliby purposes and their usage is discouraged. Their usage is
+.. note:: Custom types exists mostly for backward compatibility purposes and their usage is discouraged. Their usage is
    complex, not user friendly and the other provided types, particularly :ref:`user-defined types <udts>`, should almost
    always be enough.
 
@@ -555,5 +555,5 @@ A custom type is defined by:
 A custom type is a :token:`string` that contains the name of Java class that extends the server side ``AbstractType``
 class and that can be loaded by Cassandra (it should thus be in the ``CLASSPATH`` of every node running Cassandra). That
 class will define what values are valid for the type and how the time sorts when used for a clustering column. For any
-other purpose, a value of a custom type is the same than that of a ``blob``, and can in particular be input using the
+other purpose, a value of a custom type is the same as that of a ``blob``, and can be input using the
 :token:`blob` literal syntax.

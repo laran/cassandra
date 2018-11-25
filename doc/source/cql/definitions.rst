@@ -226,9 +226,9 @@ All the statements are listed below and are described in the rest of this docume
 Prepared Statements
 ^^^^^^^^^^^^^^^^^^^
 
-CQL supports *prepared statements*. Prepared statements are an optimization that allows to parse a query only once but
-execute it multiple times with different concrete values.
+CQL supports *prepared statements*. Prepared statements are an optimization that allows a query to be parsed only once
+but execute it multiple times with different concrete values.
 
-Any statement that uses at least one bind marker (see :token:`bind_marker`) will need to be *prepared*. After which the statement
-can be *executed* by provided concrete values for each of its marker. The exact details of how a statement is prepared
-and then executed depends on the CQL driver used and you should refer to your driver documentation.
+Any statement that uses at least one bind marker (see :token:`bind_marker`) will need to be *prepared*. Once prepared,
+the statement can be *executed* by providing concrete values for each of its markers. The exact details of how a
+statement is prepared and then executed depends on the CQL driver used. Refer to your driver documentation for details.

@@ -44,4 +44,4 @@ in SQL.
    changes
 
 .. [#] Technically, this document CQL version 3, which is not backward compatible with CQL version 1 and 2 (which have
-   been deprecated and remove) and differs from it in numerous ways.
+   been deprecated and removed) and differs from it in numerous ways.
